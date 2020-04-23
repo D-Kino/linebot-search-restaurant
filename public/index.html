@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0">
+  <title>Form</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+  <script>
+  $(document).ready(function() {
+    initializeLiff("1654122772-e95Ay5nr")
+    $('#form').submit(function(event) {
+      var values = {};
+      $.each($('#form').serializeArray(), function(i, field) {
+        values[field.name] = field.value;
+      });
+      values.smoke = $('#btn-group-smoking > .btn.active').text().trim()
+      values.card = $('#btn-group-card > .btn.active').text().trim()
+      values.sort = $('#btn-group-sort > .btn.active > input').val()
+      values.sortJunjo = $('#btn-group-sort-junjo > .btn.active').text().trim()
+      console.log(values)
+      var params = new URLSearchParams(window.location.search);
+      values.lat = params.get('lat')
+      values.lon = params.get('lon')
+      liff.sendMessages([{
+        'type': 'text',
+        'text': JSON.stringify(values)
+      }]).then(function() {
+        liff.closeWindow()
+      }).catch(function(error) {
+        window.alert('Failed to send message ' + error);
+      });
+      event.preventDefault();
+    });
+  })
+  function initializeLiff(liffId) {
+    liff
+    .init({
+      liffId: liffId
+    })
+    .then(() => {
+      console.log('LIFF Initialization succeed')
+    })
+    .catch((err) => {
+      console.log('LIFF Initialization failed ', err)
+    });
+  }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <form id="form" class="form mt-3">
+      <div class="form-group">
+        <div id="btn-group-smoking" class="w-100 btn-group btn-group-toggle" role="group" data-toggle="buttons">
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off" checked> 禁煙
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off"> 分煙
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off"> 喫煙可
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <div id="btn-group-card" class="w-100 btn-group btn-group-toggle" role="group" data-toggle="buttons">
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off" checked> カード可
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off"> 問わない
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="select-day">訪問予定曜日</label>
+        <select name="day" class="form-control" id="select-day">
+          <option>月曜日</option>
+          <option>火曜日</option>
+          <option>水曜日</option>
+          <option>木曜日</option>
+          <option>金曜日</option>
+          <option>土曜日</option>
+          <option>日曜日</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="select-time">訪問予定時間</label>
+        <select name="time" class="form-control" id="select-time">
+          <option>11時</option>
+          <option>12時</option>
+          <option>13時</option>
+          <option>14時</option>
+          <option>15時</option>
+          <option>16時</option>
+          <option>17時</option>
+          <option>18時</option>
+          <option>19時</option>
+          <option>20時</option>
+          <option>21時</option>
+          <option>22時</option>
+          <option>23時</option>
+          <option>0時</option>
+          <option>1時</option>
+          <option>2時</option>
+          <option>3時</option>
+          <option>4時</option>
+          <option>5時</option>
+          <option>6時</option>
+          <option>7時</option>
+          <option>8時</option>
+          <option>9時</option>
+          <option>10時</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div id="btn-group-sort" class="w-100 btn-group btn-group-toggle" role="group" data-toggle="buttons">
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off" value="rating"> 星の数順
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off" value="score"> スコア順
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off" value="hybrid"> 重み付け順
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off" value="review"> 口コミ件数
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off" value="kana"> アイウエオ順
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off" value="price"> 金額順
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off" value="dist"> 距離順（直線）
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off" value="geo"> 距離順（球面三角法）
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <div id="btn-group-sort-junjo" class="w-100 btn-group btn-group-toggle" role="group" data-toggle="buttons">
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off"> 昇順
+          </label>
+          <label class="btn btn-secondary">
+            <input type="radio" autocomplete="off"> 降順
+          </label>
+        </div>
+      </div>
+      <input type="submit" class="btn btn-lg btn-primary w-100" value="検索" />
+    </form>
+  </div>
+</body>
+</html>
